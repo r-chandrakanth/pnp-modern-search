@@ -25,6 +25,11 @@ export interface IPreviewContainerProps {
     */
    previewType: PreviewType;
 
+   /**
+    * Called when the preview is closed
+    */
+   onClose?: () => void;
+
 }
 
 export enum PreviewType {

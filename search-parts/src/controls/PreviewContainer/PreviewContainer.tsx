@@ -9,15 +9,21 @@ import { Overlay } from '@fluentui/react';
 import { TestConstants } from '../../common/Constants';
 
 export default class PreviewContainer extends React.Component<IPreviewContainerProps, IPreviewContainerState> {
+    private readonly scrollPosition: { left: number; top: number };
 
     public constructor(props: IPreviewContainerProps) {
         super(props);
+        this.scrollPosition = {
+            left: window.scrollX,
+            top: window.scrollY
+        };
         this.state = {
             showCallout: false,
             isLoading: true
         };
 
         this._onCloseCallout = this._onCloseCallout.bind(this);
+        this._onRestoreFocus = this._onRestoreFocus.bind(this);
     }
 
     public render(): React.ReactElement<IPreviewContainerProps> {
@@ -51,14 +57,15 @@ export default class PreviewContainer extends React.Component<IPreviewContainerP
                     hidden={false} 
                     className={`${!this.state.showCallout ? previewContainerStyles.hide : ''} ${previewContainerStyles.calloutContainer}`}
                     onDismiss={this.props.previewType === PreviewType.Document ? this._onCloseCallout: null}
+                    onRestoreFocus={this._onRestoreFocus}
                     setInitialFocus={true}
                     preventDismissOnScroll={true}
                     >
                     <div className={previewContainerStyles.calloutHeader}>
                         <IconButton iconProps={{
-                            iconName: 'ChromeClose',
-                            onClick: this._onCloseCallout
-                        }}></IconButton>
+                            iconName: 'ChromeClose'
+                        }}
+                        onClick={this._onCloseCallout}></IconButton>
                     </div>
                     <div className={previewContainerStyles.calloutContentContainer} style={{backgroundImage: backgroundImage}}>
                         {renderLoading}
@@ -84,6 +91,24 @@ export default class PreviewContainer extends React.Component<IPreviewContainerP
 
         this.setState({
             showCallout: false
+        });
+
+        if (this.props.onClose) {
+            this.props.onClose();
+        }
+
+        window.requestAnimationFrame(() => {
+            window.scrollTo(this.scrollPosition.left, this.scrollPosition.top);
+        });
+    }
+
+    private _onRestoreFocus(params: { originalElement?: HTMLElement | Window | null }): void {
+        if (params.originalElement instanceof HTMLElement) {
+            params.originalElement.focus({ preventScroll: true });
+        }
+
+        window.requestAnimationFrame(() => {
+            window.scrollTo(this.scrollPosition.left, this.scrollPosition.top);
         });
     }
 }

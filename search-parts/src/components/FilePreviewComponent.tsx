@@ -68,6 +68,7 @@ export class FilePreview extends React.Component<IFilePreviewProps, IFileIconSta
                 targetElement={this.elementPreviewRef.current}
                 previewType={PreviewType.Document}
                 showPreview={this.state.isCalloutVisible}
+                onClose={() => this.setState({ isCalloutVisible: false })}
             />;
         }
 

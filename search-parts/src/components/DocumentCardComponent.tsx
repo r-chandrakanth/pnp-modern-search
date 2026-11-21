@@ -176,6 +176,7 @@ export class DocumentCardComponent extends React.Component<
           previewType={PreviewType.Document}
           targetElement={this.documentCardPreviewRef.current}
           showPreview={this.state.showCallout}
+          onClose={() => this.setState({ showCallout: false })}
         />
       );
     }
